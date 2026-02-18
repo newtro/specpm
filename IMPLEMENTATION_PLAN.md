@@ -44,11 +44,11 @@ _Goal: Packages come from a real registry. Publish, search, install over HTTP._
 | 2.5 | ✅ `specpm install` from registry (HTTP download + integrity check) | 03 | P0 | 2.4, 1.8 |
 | 2.6 | ✅ `specpm publish` command | 09 | P0 | 2.2 |
 | 2.7 | ✅ Authentication: `specpm login`, token storage, auth middleware | 09, 14 | P0 | 2.1 |
-| 2.8 | Search endpoint: `GET /search` with full-text index | 15 | P1 | 2.1 |
-| 2.9 | `specpm search` command | 02 | P1 | 2.8 |
+| 2.8 | ✅ Search endpoint: `GET /search` with full-text index | 15 | P1 | 2.1 |
+| 2.9 | ✅ `specpm search` command | 02 | P1 | 2.8 |
 | 2.10 | Package metadata endpoint and caching (ETags) | 14 | P1 | 2.1 |
 | 2.11 | Rate limiting middleware | 14 | P1 | 2.1 |
-| 2.12 | `specpm version` command (bump + changelog) | 10 | P1 | 1.2 |
+| 2.12 | ✅ `specpm version` command (bump + changelog) | 10 | P1 | 1.2 |
 
 ---
 
@@ -59,15 +59,15 @@ _Goal: Specs are verified before publish. Generated code is validated against sp
 | # | Task | Spec | Priority | Depends On |
 |---|------|------|----------|------------|
 | 3.1 | ✅ L0 verification: YAML parse, schema validate, file existence | 08 | P0 | 1.2 |
-| 3.2 | L1 verification: cross-reference checks, constraint consistency | 08 | P1 | 3.1 |
+| 3.2 | ✅ L1 verification: cross-reference checks, constraint consistency | 08 | P1 | 3.1 |
 | 3.3 | L2 verification: dependency resolution check | 08 | P1 | 3.2, 2.5 |
 | 3.4 | ✅ `specpm verify` command | 08 | P0 | 3.1 |
 | 3.5 | Require L2 before publish (gate in publish flow) | 08, 09 | P1 | 3.3, 2.6 |
-| 3.6 | AST parser setup: ts-morph for TypeScript/JavaScript | 05 | P1 | — |
-| 3.7 | Entity checker: validate interfaces match JSON Schema | 05 | P1 | 3.6 |
-| 3.8 | Pattern checker: AST pattern matching for constraints | 05 | P1 | 3.6 |
+| 3.6 | ✅ AST parser setup: ts-morph for TypeScript/JavaScript | 05 | P1 | — |
+| 3.7 | ✅ Entity checker: validate interfaces match JSON Schema | 05 | P1 | 3.6 |
+| 3.8 | ✅ Pattern checker: AST pattern matching for constraints | 05 | P1 | 3.6 |
 | 3.9 | Structural checker: export/file existence | 05 | P1 | 3.6 |
-| 3.10 | `specpm check` command with report output | 05 | P1 | 3.7, 3.8, 3.9 |
+| 3.10 | ✅ `specpm check` command with report output | 05 | P1 | 3.7, 3.8, 3.9 |
 | 3.11 | `--json` and `--fix` flags for check | 05 | P1 | 3.10 |
 | 3.12 | Quality scoring engine | 16 | P2 | 3.3 |
 | 3.13 | L3 verification: LLM-based semantic review | 08 | P2 | 3.3 |
