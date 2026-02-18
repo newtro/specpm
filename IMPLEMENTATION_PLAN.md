@@ -37,13 +37,13 @@ _Goal: Packages come from a real registry. Publish, search, install over HTTP._
 
 | # | Task | Spec | Priority | Depends On |
 |---|------|------|----------|------------|
-| 2.1 | Registry server scaffold: Fastify + SQLite | 14 | P0 | — |
-| 2.2 | Publish endpoint: `PUT /packages/:name/:version` | 14 | P0 | 2.1 |
-| 2.3 | Package storage: tarball to filesystem/S3 | 14 | P0 | 2.1 |
-| 2.4 | Download endpoint: `GET /packages/:name/:version/tarball` | 14 | P0 | 2.3 |
-| 2.5 | `specpm install` from registry (HTTP download + integrity check) | 03 | P0 | 2.4, 1.8 |
-| 2.6 | `specpm publish` command | 09 | P0 | 2.2 |
-| 2.7 | Authentication: `specpm login`, token storage, auth middleware | 09, 14 | P0 | 2.1 |
+| 2.1 | ✅ Registry server scaffold: Fastify + SQLite | 14 | P0 | — |
+| 2.2 | ✅ Publish endpoint: `PUT /packages/:name/:version` | 14 | P0 | 2.1 |
+| 2.3 | ✅ Package storage: tarball to filesystem/S3 | 14 | P0 | 2.1 |
+| 2.4 | ✅ Download endpoint: `GET /packages/:name/:version/tarball` | 14 | P0 | 2.3 |
+| 2.5 | ✅ `specpm install` from registry (HTTP download + integrity check) | 03 | P0 | 2.4, 1.8 |
+| 2.6 | ✅ `specpm publish` command | 09 | P0 | 2.2 |
+| 2.7 | ✅ Authentication: `specpm login`, token storage, auth middleware | 09, 14 | P0 | 2.1 |
 | 2.8 | Search endpoint: `GET /search` with full-text index | 15 | P1 | 2.1 |
 | 2.9 | `specpm search` command | 02 | P1 | 2.8 |
 | 2.10 | Package metadata endpoint and caching (ETags) | 14 | P1 | 2.1 |

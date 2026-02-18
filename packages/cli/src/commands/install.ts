@@ -2,6 +2,10 @@ import { mkdir, readFile, writeFile, cp, access } from 'node:fs/promises'
 import { join, resolve, isAbsolute } from 'node:path'
 import { parse as parseYaml, stringify } from 'yaml'
 import { createHash } from 'node:crypto'
+import { execSync } from 'node:child_process'
+import { mkdtemp, rm } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { homedir } from 'node:os'
 import { loadSpecPackage } from '../lib/loader.js'
 import type { Result } from 'shared'
 
@@ -9,6 +13,7 @@ export interface InstallOptions {
   saveDev?: boolean
   dryRun?: boolean
   force?: boolean
+  registry?: string
 }
 
 interface ProjectManifest {
@@ -119,4 +124,102 @@ export async function generateLockfile(cwd: string): Promise<void> {
   }
 
   await writeFile(join(cwd, 'specpm-lock.yaml'), stringify(lockfile))
+}
+
+export async function installFromRegistry(
+  packageName: string,
+  options: InstallOptions = {}
+): Promise<Result<string, string>> {
+  const cwd = process.cwd()
+
+  const manifestResult = await loadProjectManifest(cwd)
+  if (!manifestResult.ok) return manifestResult
+
+  // Determine registry URL
+  let registryUrl = options.registry
+  if (!registryUrl) {
+    const authPath = join(homedir(), '.specpm', 'auth.json')
+    if (await fileExists(authPath)) {
+      const authContent = await readFile(authPath, 'utf-8')
+      registryUrl = JSON.parse(authContent).registry
+    }
+  }
+  if (!registryUrl) {
+    return { ok: false, error: 'No registry configured. Run `specpm login` or pass --registry.' }
+  }
+
+  // Parse package name
+  const match = packageName.match(/^@([a-z0-9-]+)\/([a-z0-9-]+)$/)
+  if (!match) {
+    return { ok: false, error: `Invalid package name: ${packageName}. Expected @scope/name` }
+  }
+  const [, scope, name] = match
+
+  // Fetch metadata to get latest version
+  const metaRes = await fetch(`${registryUrl}/api/v1/packages/${scope}/${name}`)
+  if (!metaRes.ok) {
+    if (metaRes.status === 404) {
+      return { ok: false, error: `Package ${packageName} not found in registry` }
+    }
+    return { ok: false, error: `Registry error: ${metaRes.status}` }
+  }
+
+  const meta = await metaRes.json() as any
+  const versions = Object.keys(meta.versions)
+  if (versions.length === 0) {
+    return { ok: false, error: `No versions found for ${packageName}` }
+  }
+
+  // Pick latest version (simple: last published)
+  const latestVersion = versions[0]
+  const versionMeta = meta.versions[latestVersion]
+
+  if (options.dryRun) {
+    console.error(`Would install ${packageName}@${latestVersion} from registry`)
+    return { ok: true, value: packageName }
+  }
+
+  // Download tarball
+  const tarballRes = await fetch(`${registryUrl}${versionMeta.tarballUrl}`)
+  if (!tarballRes.ok) {
+    return { ok: false, error: `Failed to download tarball: ${tarballRes.status}` }
+  }
+
+  const tarballBuffer = Buffer.from(await tarballRes.arrayBuffer())
+
+  // Verify integrity
+  const computedHash = 'sha256-' + createHash('sha256').update(tarballBuffer).digest('hex')
+  if (computedHash !== versionMeta.integrity) {
+    return { ok: false, error: `Integrity check failed. Expected ${versionMeta.integrity}, got ${computedHash}` }
+  }
+
+  // Extract to .specpm/specs/@scope/name/
+  const targetDir = join(cwd, '.specpm', 'specs', `@${scope}`, name)
+  await mkdir(targetDir, { recursive: true })
+
+  // Extract tarball
+  const tempDir = await mkdtemp(join(tmpdir(), 'specpm-install-'))
+  try {
+    const tarballPath = join(tempDir, 'package.tgz')
+    await writeFile(tarballPath, tarballBuffer)
+    execSync(`tar xzf ${tarballPath} -C ${targetDir}`, { stdio: 'pipe' })
+  } finally {
+    await rm(tempDir, { recursive: true, force: true })
+  }
+
+  // Update specpm.yaml
+  const projectManifest = manifestResult.value
+  const depKey = options.saveDev ? 'devDependencies' : 'dependencies'
+  if (!projectManifest[depKey]) {
+    projectManifest[depKey] = {}
+  }
+  ;(projectManifest[depKey] as Record<string, string>)[packageName] = latestVersion
+
+  await writeFile(join(cwd, 'specpm.yaml'), stringify(projectManifest))
+
+  // Generate lockfile
+  await generateLockfile(cwd)
+
+  console.error(`✅ Installed ${packageName}@${latestVersion} from registry`)
+  return { ok: true, value: packageName }
 }

@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 import { Command } from 'commander'
 import { initCommand } from './commands/init.js'
-import { installFromLocalPath } from './commands/install.js'
+import { installFromLocalPath, installFromRegistry } from './commands/install.js'
 import { contextCommand } from './commands/context.js'
 import { verifyCommand } from './commands/verify.js'
+import { publishCommand } from './commands/publish.js'
+import { loginCommand, logoutCommand } from './commands/login.js'
 
 const program = new Command()
 
@@ -29,16 +31,26 @@ program
 
 program
   .command('install [source]')
-  .description('Install a spec package from a local path')
+  .description('Install a spec package from local path or registry')
   .option('--save-dev', 'Add to devDependencies')
   .option('--dry-run', 'Show what would install')
   .option('--force', 'Re-install even if present')
+  .option('--registry <url>', 'Registry URL')
   .action(async (source, options) => {
     if (!source) {
-      console.error('Usage: specpm install <path>')
+      console.error('Usage: specpm install <path-or-package>')
       process.exit(1)
     }
-    const result = await installFromLocalPath(source, options)
+    // If source starts with @ and has no path separator beyond the scope, it's a registry install
+    const isRegistryInstall = source.startsWith('@') && !source.includes('/') ||
+      (source.startsWith('@') && source.match(/^@[a-z0-9-]+\/[a-z0-9-]+$/) && !(await import('node:fs/promises').then(fs => fs.access(source).then(() => true).catch(() => false))))
+    
+    let result
+    if (isRegistryInstall) {
+      result = await installFromRegistry(source, options)
+    } else {
+      result = await installFromLocalPath(source, options)
+    }
     if (!result.ok) {
       console.error(`Error: ${result.error}`)
       process.exit(1)
@@ -67,6 +79,46 @@ program
       console.error(`Error: ${result.error}`)
       process.exit(1)
     } else if (!result.value.passed) {
+      process.exit(1)
+    }
+  })
+
+program
+  .command('publish [path]')
+  .description('Publish a spec package to the registry')
+  .option('--dry-run', 'Show what would publish without uploading')
+  .option('--registry <url>', 'Registry URL')
+  .option('--tag <tag>', 'Dist-tag (default: latest)')
+  .action(async (path, options) => {
+    const result = await publishCommand(path ?? '.', options)
+    if (!result.ok) {
+      console.error(`Error: ${result.error}`)
+      process.exit(1)
+    }
+  })
+
+program
+  .command('login')
+  .description('Authenticate with a spec registry')
+  .requiredOption('--registry <url>', 'Registry URL')
+  .option('--token <token>', 'API token')
+  .option('--username <username>', 'Username')
+  .option('--password <password>', 'Password')
+  .action(async (options) => {
+    const result = await loginCommand(options)
+    if (!result.ok) {
+      console.error(`Error: ${result.error}`)
+      process.exit(1)
+    }
+  })
+
+program
+  .command('logout')
+  .description('Remove stored authentication')
+  .action(async () => {
+    const result = await logoutCommand()
+    if (!result.ok) {
+      console.error(`Error: ${result.error}`)
       process.exit(1)
     }
   })
