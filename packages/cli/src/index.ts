@@ -8,6 +8,7 @@ import { publishCommand } from './commands/publish.js'
 import { loginCommand, logoutCommand } from './commands/login.js'
 import { searchCommand } from './commands/search.js'
 import { versionCommand } from './commands/version.js'
+import { checkCommand } from './commands/check.js'
 
 const program = new Command()
 
@@ -121,6 +122,22 @@ program
     const result = await logoutCommand()
     if (!result.ok) {
       console.error(`Error: ${result.error}`)
+      process.exit(1)
+    }
+  })
+
+program
+  .command('check')
+  .description('Check source code against installed spec constraints')
+  .option('--spec <package>', 'Check against specific spec only')
+  .option('--json', 'Output as JSON')
+  .option('--strict', 'Treat warnings as errors')
+  .action(async (options) => {
+    const result = await checkCommand(options)
+    if (!result.ok) {
+      console.error(`Error: ${result.error}`)
+      process.exit(1)
+    } else if (result.value.summary.fail > 0 || (options.strict && result.value.summary.warn > 0)) {
       process.exit(1)
     }
   })
