@@ -2,6 +2,8 @@
 import { Command } from 'commander'
 import { initCommand } from './commands/init.js'
 import { installFromLocalPath } from './commands/install.js'
+import { contextCommand } from './commands/context.js'
+import { verifyCommand } from './commands/verify.js'
 
 const program = new Command()
 
@@ -39,6 +41,32 @@ program
     const result = await installFromLocalPath(source, options)
     if (!result.ok) {
       console.error(`Error: ${result.error}`)
+      process.exit(1)
+    }
+  })
+
+program
+  .command('context')
+  .description('Generate AI context files from installed specs')
+  .option('--target <target>', 'Target agent: claude, cursor, copilot, all', 'claude')
+  .action(async (options) => {
+    const result = await contextCommand(options)
+    if (!result.ok) {
+      console.error(`Error: ${result.error}`)
+      process.exit(1)
+    }
+  })
+
+program
+  .command('verify [path]')
+  .description('Verify a spec package')
+  .option('--json', 'Output as JSON')
+  .action(async (path, options) => {
+    const result = await verifyCommand(path ?? '.', options)
+    if (!result.ok) {
+      console.error(`Error: ${result.error}`)
+      process.exit(1)
+    } else if (!result.value.passed) {
       process.exit(1)
     }
   })
