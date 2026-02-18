@@ -6,7 +6,7 @@ import { listInstalledSpecs } from '../lib/loader.js'
 import { generateClaudeContext } from '../lib/context/claude.js'
 import { generateCursorContext } from '../lib/context/cursor.js'
 import { generateCopilotContext } from '../lib/context/copilot.js'
-import type { ProjectConfig } from '../lib/context/generator.js'
+import type { ProjectConfig, OverrideConfig } from '../lib/context/generator.js'
 
 export interface ContextOptions {
   target?: string
@@ -24,6 +24,7 @@ async function loadProjectConfig(projectRoot: string): Promise<Result<ProjectCon
         version: config['version'] as string | undefined,
         description: config['description'] as string | undefined,
         targets: (config['context'] as Record<string, unknown> | undefined)?.['targets'] as string[] | undefined,
+        overrides: config['overrides'] as Record<string, OverrideConfig> | undefined,
       },
     }
   } catch {
@@ -70,7 +71,23 @@ export async function contextCommand(options: ContextOptions): Promise<Result<st
 
     if (!result.ok) return result
     outputs.push(result.value)
-    console.error(`✅ Generated context for ${t}: ${result.value}`)
+
+    // Token counting and size warnings
+    try {
+      const { readFile: rf } = await import('node:fs/promises')
+      const content = await rf(result.value, 'utf-8')
+      const estimatedTokens = Math.ceil(content.length / 4)
+      const sizeKb = (content.length / 1024).toFixed(1)
+      let sizeInfo = `${sizeKb}KB, ~${estimatedTokens.toLocaleString()} tokens`
+      if (estimatedTokens > 100_000) {
+        sizeInfo += ' ⚠️  Very large context — consider reducing token budgets'
+      } else if (estimatedTokens > 50_000) {
+        sizeInfo += ' ⚠️  Large context'
+      }
+      console.error(`✅ Generated context for ${t}: ${result.value} (${sizeInfo})`)
+    } catch {
+      console.error(`✅ Generated context for ${t}: ${result.value}`)
+    }
   }
 
   return { ok: true, value: outputs }

@@ -1,10 +1,16 @@
 import type { SpecPackage } from 'shared'
 
+export interface OverrideConfig {
+  extend?: Record<string, unknown>
+  remove?: string[]
+}
+
 export interface ProjectConfig {
   name: string
   version?: string
   description?: string
   targets?: string[]
+  overrides?: Record<string, OverrideConfig>  // keyed by package name
 }
 
 export interface GenerateContextOptions {
@@ -57,8 +63,42 @@ function renderConstraints(constraints: SpecPackage['constraints']): string {
   return output
 }
 
+function applyOverrides(packages: import('shared').SpecPackage[], overrides?: Record<string, OverrideConfig>): import('shared').SpecPackage[] {
+  if (!overrides) return packages
+
+  return packages.map(pkg => {
+    const override = overrides[pkg.manifest.name]
+    if (!override) return pkg
+
+    let entities = [...pkg.entities]
+
+    // Remove entities by title
+    if (override.remove) {
+      entities = entities.filter(e => {
+        const title = (e['title'] as string) ?? (e['$id'] as string) ?? ''
+        return !override.remove!.includes(title)
+      })
+    }
+
+    // Extend entities: merge properties into matching entity
+    if (override.extend) {
+      for (const [entityTitle, extraProps] of Object.entries(override.extend)) {
+        const entity = entities.find(e => (e['title'] as string) === entityTitle || (e['$id'] as string) === entityTitle)
+        if (entity && typeof extraProps === 'object' && extraProps !== null) {
+          const props = (entity['properties'] ?? {}) as Record<string, unknown>
+          Object.assign(props, extraProps)
+          entity['properties'] = props
+        }
+      }
+    }
+
+    return { ...pkg, entities }
+  })
+}
+
 export function generateContext(options: GenerateContextOptions): string {
-  const { packages, config, target } = options
+  const { config, target } = options
+  const packages = applyOverrides(options.packages, config.overrides)
   const lines: string[] = []
 
   // Preamble
