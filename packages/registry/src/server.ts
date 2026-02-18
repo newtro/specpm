@@ -24,6 +24,28 @@ export async function createServer(options: RegistryOptions = {}) {
   app.decorate('db', db)
   app.decorate('dataDir', dataDir)
 
+  // Rate limiting
+  const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
+  const RATE_LIMIT_WINDOW_MS = 60_000 // 1 minute
+  const RATE_LIMIT_MAX = 60 // requests per window
+
+  app.addHook('onRequest', async (request, reply) => {
+    const ip = request.ip
+    const now = Date.now()
+    let entry = rateLimitMap.get(ip)
+    if (!entry || now > entry.resetAt) {
+      entry = { count: 0, resetAt: now + RATE_LIMIT_WINDOW_MS }
+      rateLimitMap.set(ip, entry)
+    }
+    entry.count++
+    reply.header('x-ratelimit-limit', RATE_LIMIT_MAX)
+    reply.header('x-ratelimit-remaining', Math.max(0, RATE_LIMIT_MAX - entry.count))
+    reply.header('x-ratelimit-reset', Math.ceil(entry.resetAt / 1000))
+    if (entry.count > RATE_LIMIT_MAX) {
+      return reply.status(429).send({ error: 'Too many requests. Try again later.' })
+    }
+  })
+
   // Health check
   app.get('/api/v1/health', async () => {
     return { status: 'ok', timestamp: new Date().toISOString() }
