@@ -18,4 +18,30 @@ export interface SpecYaml {
   }
 }
 
+export interface ConstraintDefinition {
+  id: string
+  description: string
+  type: 'pattern' | 'entity' | 'structural'
+  severity: 'error' | 'warning'
+  check: Record<string, unknown>
+}
+
+export interface ConstraintsFile {
+  constraints: ConstraintDefinition[]
+}
+
+export interface SpecPackage {
+  manifest: SpecYaml
+  directory: string
+  entities: Record<string, unknown>[]
+  states: Record<string, unknown>[]
+  constraints: ConstraintDefinition[]
+  docs: string[]
+}
+
 export type Result<T, E = Error> = { ok: true; value: T } | { ok: false; error: E }
+
+export type ValidationError = {
+  path: string
+  message: string
+}
