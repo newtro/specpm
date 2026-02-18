@@ -1,0 +1,40 @@
+{
+  "name": "eslint-plugin-specpm",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "ESLint plugin for SpecPM spec compliance",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts",
+    "test": "vitest run"
+  },
+  "keywords": [
+    "eslint",
+    "eslintplugin",
+    "specpm"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "ajv": "^8.18.0",
+    "shared": "workspace:*",
+    "yaml": "^2.8.2"
+  },
+  "peerDependencies": {
+    "eslint": ">=8.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.2.3",
+    "@typescript-eslint/eslint-plugin": "^8.56.0",
+    "@typescript-eslint/parser": "^8.56.0",
+    "eslint": "^9.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.5.0"
+  }
+}
