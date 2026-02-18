@@ -92,10 +92,30 @@ _Goal: Teams enforce standards. CI integration. Private registries._
 
 ---
 
+## Phase 5: ESLint Plugin (The Killer Feature)
+
+_Goal: Spec violations surface as lint errors in existing ESLint pipelines. Zero new CI steps._
+
+| # | Task | Spec | Priority | Depends On |
+|---|------|------|----------|------------|
+| 5.1 | Plugin scaffold: eslint-plugin-specpm package, flat config + legacy support | 17 | P0 | 3.6 |
+| 5.2 | Spec discovery: find specpm.yaml, load installed specs, cache for lint run | 17 | P0 | 5.1, 1.5 |
+| 5.3 | `specpm/entity-match` rule: validate TS interfaces against entity schemas | 17 | P0 | 5.2, 3.6 |
+| 5.4 | `specpm/constraint-pattern` rule: check required function call patterns | 17 | P0 | 5.2, 3.8 |
+| 5.5 | `specpm/endpoint-shape` rule: validate route handler response shapes | 17 | P1 | 5.2, 3.6 |
+| 5.6 | `specpm/state-coverage` rule: warn on unhandled state machine states | 17 | P1 | 5.2 |
+| 5.7 | Framework auto-detection (Next.js, Express, Fastify) for endpoint rules | 17 | P1 | 5.5 |
+| 5.8 | Recommended and strict config presets | 17 | P0 | 5.3, 5.4 |
+| 5.9 | Auto-fix support for entity-match (stub missing fields) | 17 | P2 | 5.3 |
+| 5.10 | Performance optimization: lazy ts-morph loading, file pattern filtering | 17 | P1 | 5.3 |
+
+---
+
 ## Milestone Summary
 
 | Milestone | Tasks | Target |
 |-----------|-------|--------|
 | **MVP Demo** | 1.1–1.12, 2.1–2.7, 3.1, 3.4 | Week 4 |
 | **v1.0** | All P1 tasks | Week 10 |
+| **ESLint Plugin** | 5.1–5.8 (P0+P1) | Week 12 |
 | **v2.0** | All P2 tasks | Future |

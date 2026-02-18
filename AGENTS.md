@@ -164,6 +164,7 @@ The `specs/` directory is the **source of truth** for requirements. When impleme
 | 14 (registry API) | `registry/routes/*.ts` |
 | 15 (search/discovery) | `registry/search/*.ts` |
 | 16 (trust/quality) | `registry/scoring.ts` |
+| 17 (eslint plugin) | `eslint-plugin/src/*.ts` |
 
 ## Do's and Don'ts
 
