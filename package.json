@@ -1,10 +1,28 @@
 {
   "name": "specpm-monorepo",
   "private": true,
+  "description": "SpecPM — the package manager for AI coding specifications",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/newtro/specpm.git"
+  },
+  "keywords": [
+    "ai",
+    "specifications",
+    "package-manager",
+    "claude",
+    "cursor",
+    "copilot",
+    "eslint",
+    "code-generation"
+  ],
+  "license": "MIT",
   "scripts": {
     "build": "pnpm -r build",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "lint": "pnpm -r lint",
+    "clean": "pnpm -r exec rm -rf dist"
   },
   "devDependencies": {
     "tsup": "^8.0.0",
@@ -14,5 +32,9 @@
   "dependencies": {
     "ajv": "^8.18.0",
     "yaml": "^2.8.2"
-  }
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@9.15.9"
 }
