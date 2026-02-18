@@ -9,6 +9,9 @@ import { loginCommand, logoutCommand } from './commands/login.js'
 import { searchCommand } from './commands/search.js'
 import { versionCommand } from './commands/version.js'
 import { checkCommand } from './commands/check.js'
+import { teamCheckCommand, teamSyncCommand } from './commands/team.js'
+import { ciCommand } from './commands/ci.js'
+import { registryAddCommand, registryRemoveCommand, registryListCommand } from './commands/registry.js'
 
 const program = new Command()
 
@@ -169,6 +172,91 @@ program
   .option('--registry <url>', 'Registry URL')
   .action(async (query, options) => {
     const result = await searchCommand(query, options)
+    if (!result.ok) {
+      console.error(`Error: ${result.error}`)
+      process.exit(1)
+    }
+  })
+
+// Team commands
+const team = program.command('team').description('Team configuration and compliance')
+
+team
+  .command('check')
+  .description('Verify project meets team requirements')
+  .option('--json', 'Output as JSON')
+  .action(async (options) => {
+    const result = await teamCheckCommand(options)
+    if (!result.ok) {
+      console.error(`Error: ${result.error}`)
+      process.exit(2)
+    } else if (!result.value.passed) {
+      process.exit(1)
+    }
+  })
+
+team
+  .command('sync')
+  .description('Install/update required team packages')
+  .option('--registry <url>', 'Registry URL')
+  .action(async (options) => {
+    const result = await teamSyncCommand(options)
+    if (!result.ok) {
+      console.error(`Error: ${result.error}`)
+      process.exit(1)
+    }
+  })
+
+// CI command
+program
+  .command('ci')
+  .description('Run all checks for CI pipeline')
+  .option('--check', 'Run code validation')
+  .option('--team', 'Run team compliance')
+  .option('--verify', 'Verify local specs')
+  .option('--reporter <format>', 'Output format: text, json, junit, github')
+  .option('--strict', 'Treat warnings as errors')
+  .action(async (options) => {
+    const result = await ciCommand(options)
+    if (!result.ok) {
+      console.error(`Error: ${result.error}`)
+      process.exit(2)
+    } else if (!result.value.passed) {
+      process.exit(1)
+    }
+  })
+
+// Registry commands
+const registry = program.command('registry').description('Manage spec registries')
+
+registry
+  .command('add <scope> <url>')
+  .description('Add a scoped registry')
+  .action(async (scope, url) => {
+    const result = await registryAddCommand(scope, url)
+    if (!result.ok) {
+      console.error(`Error: ${result.error}`)
+      process.exit(1)
+    }
+  })
+
+registry
+  .command('remove <scope>')
+  .description('Remove a scoped registry')
+  .action(async (scope) => {
+    const result = await registryRemoveCommand(scope)
+    if (!result.ok) {
+      console.error(`Error: ${result.error}`)
+      process.exit(1)
+    }
+  })
+
+registry
+  .command('list')
+  .description('List configured registries')
+  .option('--json', 'Output as JSON')
+  .action(async (options) => {
+    const result = await registryListCommand(options)
     if (!result.ok) {
       console.error(`Error: ${result.error}`)
       process.exit(1)

@@ -80,15 +80,15 @@ _Goal: Teams enforce standards. CI integration. Private registries._
 
 | # | Task | Spec | Priority | Depends On |
 |---|------|------|----------|------------|
-| 4.1 | `specpm-team.yaml` schema and loader | 12 | P1 | 1.4 |
-| 4.2 | `specpm team check` command | 12 | P1 | 4.1 |
-| 4.3 | `specpm team sync` command | 12 | P1 | 4.1, 2.5 |
-| 4.4 | `specpm ci` command (non-interactive pipeline) | 13 | P1 | 3.10 |
-| 4.5 | JUnit reporter for CI output | 13 | P1 | 4.4 |
-| 4.6 | GitHub Actions reporter (annotations) | 13 | P1 | 4.4 |
-| 4.7 | Private registry: scoped registry config | 11 | P2 | 2.1 |
-| 4.8 | Private registry: auth token from env vars | 11 | P2 | 4.7 |
-| 4.9 | `specpm registry add/list/remove` commands | 11 | P2 | 4.7 |
+| 4.1 | ✅ `specpm-team.yaml` schema and loader | 12 | P1 | 1.4 |
+| 4.2 | ✅ `specpm team check` command | 12 | P1 | 4.1 |
+| 4.3 | ✅ `specpm team sync` command | 12 | P1 | 4.1, 2.5 |
+| 4.4 | ✅ `specpm ci` command (non-interactive pipeline) | 13 | P1 | 3.10 |
+| 4.5 | ✅ JUnit reporter for CI output | 13 | P1 | 4.4 |
+| 4.6 | ✅ GitHub Actions reporter (annotations) | 13 | P1 | 4.4 |
+| 4.7 | ✅ Private registry: scoped registry config | 11 | P2 | 2.1 |
+| 4.8 | ✅ Private registry: auth token from env vars | 11 | P2 | 4.7 |
+| 4.9 | ✅ `specpm registry add/list/remove` commands | 11 | P2 | 4.7 |
 
 ---
 
