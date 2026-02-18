@@ -1,0 +1,34 @@
+constraints:
+  - id: "auth-001"
+    description: "Passwords must be hashed using bcrypt with a minimum cost factor of 12"
+    type: "pattern"
+    severity: "error"
+    check:
+      pattern: "function-call"
+      target: "registration"
+      required: "bcrypt.hash"
+
+  - id: "auth-002"
+    description: "Failed login attempts must be tracked and accounts locked after 5 failures"
+    type: "entity"
+    severity: "error"
+    check:
+      entity: "User"
+      requiredFields: ["failedLoginAttempts", "lockedUntil"]
+
+  - id: "auth-003"
+    description: "Sessions must have an expiry time no longer than 24 hours"
+    type: "entity"
+    severity: "error"
+    check:
+      entity: "Session"
+      requiredFields: ["expiresAt"]
+
+  - id: "auth-004"
+    description: "Password reset tokens must expire within 1 hour"
+    type: "pattern"
+    severity: "warning"
+    check:
+      pattern: "token-expiry"
+      target: "password-reset"
+      maxDuration: "1h"

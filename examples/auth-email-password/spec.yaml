@@ -1,0 +1,21 @@
+name: "@auth/email-password"
+version: "1.0.0"
+description: "Email and password authentication specification"
+author: "specpm-community"
+license: "MIT"
+tags: ["auth", "email", "password", "security"]
+specpm: ">=0.1.0"
+
+entities:
+  - entities/user.schema.json
+  - entities/session.schema.json
+
+constraints: constraints/constraints.yaml
+
+docs:
+  - docs/overview.md
+  - docs/implementation-notes.md
+
+context:
+  priority: ["constraints", "entities", "docs"]
+  tokenBudget: 6000

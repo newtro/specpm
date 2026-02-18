@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "page",
+  "title": "PaginatedResponse",
+  "type": "object",
+  "required": ["items", "pageInfo"],
+  "properties": {
+    "items": { "type": "array" },
+    "pageInfo": {
+      "type": "object",
+      "required": ["hasNextPage", "endCursor"],
+      "properties": {
+        "hasNextPage": { "type": "boolean" },
+        "hasPreviousPage": { "type": "boolean" },
+        "startCursor": { "type": "string" },
+        "endCursor": { "type": "string" },
+        "totalCount": { "type": "integer" }
+      }
+    }
+  }
+}

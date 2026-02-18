@@ -1,0 +1,18 @@
+name: "@data/pagination"
+version: "1.0.0"
+description: "Cursor-based pagination specification"
+author: "specpm-community"
+license: "MIT"
+tags: ["data", "pagination", "api"]
+
+entities:
+  - entities/page.schema.json
+
+constraints: constraints/constraints.yaml
+
+docs:
+  - docs/overview.md
+
+context:
+  priority: ["constraints", "entities", "docs"]
+  tokenBudget: 3000

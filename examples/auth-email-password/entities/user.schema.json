@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "user",
+  "title": "User",
+  "type": "object",
+  "required": ["id", "email", "passwordHash", "createdAt"],
+  "properties": {
+    "id": { "type": "string", "format": "uuid" },
+    "email": { "type": "string", "format": "email" },
+    "passwordHash": { "type": "string", "minLength": 60 },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" },
+    "emailVerified": { "type": "boolean", "default": false },
+    "failedLoginAttempts": { "type": "integer", "default": 0 },
+    "lockedUntil": { "type": "string", "format": "date-time" }
+  }
+}

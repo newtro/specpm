@@ -1,0 +1,17 @@
+constraints:
+  - id: "page-001"
+    description: "All list endpoints must accept cursor and limit parameters"
+    type: "pattern"
+    severity: "error"
+    check:
+      pattern: "function-params"
+      target: "list-endpoint"
+      required: ["cursor", "limit"]
+
+  - id: "page-002"
+    description: "Default page size must be 20, maximum 100"
+    type: "structural"
+    severity: "warning"
+    check:
+      defaultLimit: 20
+      maxLimit: 100
