@@ -14,11 +14,11 @@ _Goal: `specpm init` → `specpm install` (from local) → `specpm context` → 
 | 1.1 | ✅ Project scaffold: TypeScript, Commander.js CLI, build pipeline | — | P0 | — |
 | 1.2 | ✅ Define spec package format: spec.yaml schema, directory structure | 07 | P0 | 1.1 |
 | 1.3 | ✅ Create 2-3 example spec packages (auth/oauth2, data/pagination) | 07 | P0 | 1.2 |
-| 1.4 | `specpm init` command: interactive + `--yes` mode | 01 | P0 | 1.1 |
-| 1.5 | Spec loader: read and parse spec packages from `.specpm/specs/` | 07 | P0 | 1.2 |
-| 1.6 | `specpm install` from local path (no registry yet) | 03 | P0 | 1.4, 1.5 |
-| 1.7 | Lockfile generation (`specpm-lock.yaml`) | 03 | P0 | 1.6 |
-| 1.8 | Dependency resolution algorithm (SemVer ranges, flat tree) | 03 | P0 | 1.6 |
+| 1.4 | ✅ `specpm init` command: interactive + `--yes` mode | 01 | P0 | 1.1 |
+| 1.5 | ✅ Spec loader: read and parse spec packages from `.specpm/specs/` | 07 | P0 | 1.2 |
+| 1.6 | ✅ `specpm install` from local path (no registry yet) | 03 | P0 | 1.4, 1.5 |
+| 1.7 | ✅ Lockfile generation (`specpm-lock.yaml`) | 03 | P0 | 1.6 |
+| 1.8 | ✅ Dependency resolution algorithm (SemVer ranges, flat tree) | 03 | P0 | 1.6 |
 | 1.9 | Context generator core: merge specs into unified markdown | 04 | P0 | 1.5 |
 | 1.10 | Claude target: generate `.specpm/CLAUDE.md` | 04 | P0 | 1.9 |
 | 1.11 | Cursor target: generate `.cursorrules` | 04 | P0 | 1.9 |
