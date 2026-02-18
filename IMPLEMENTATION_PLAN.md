@@ -19,10 +19,10 @@ _Goal: `specpm init` → `specpm install` (from local) → `specpm context` → 
 | 1.6 | ✅ `specpm install` from local path (no registry yet) | 03 | P0 | 1.4, 1.5 |
 | 1.7 | ✅ Lockfile generation (`specpm-lock.yaml`) | 03 | P0 | 1.6 |
 | 1.8 | ✅ Dependency resolution algorithm (SemVer ranges, flat tree) | 03 | P0 | 1.6 |
-| 1.9 | Context generator core: merge specs into unified markdown | 04 | P0 | 1.5 |
-| 1.10 | Claude target: generate `.specpm/CLAUDE.md` | 04 | P0 | 1.9 |
-| 1.11 | Cursor target: generate `.cursorrules` | 04 | P0 | 1.9 |
-| 1.12 | Copilot target: generate `.github/copilot-instructions.md` | 04 | P0 | 1.9 |
+| 1.9 | ✅ Context generator core: merge specs into unified markdown | 04 | P0 | 1.5 |
+| 1.10 | ✅ Claude target: generate `.specpm/CLAUDE.md` | 04 | P0 | 1.9 |
+| 1.11 | ✅ Cursor target: generate `.cursorrules` | 04 | P0 | 1.9 |
+| 1.12 | ✅ Copilot target: generate `.github/copilot-instructions.md` | 04 | P0 | 1.9 |
 | 1.13 | Override system: entity extend/remove/rename in memory | 06 | P1 | 1.9 |
 | 1.14 | Context token counting and size warnings | 04 | P1 | 1.9 |
 | 1.15 | `specpm context --watch` mode | 04 | P1 | 1.9 |
@@ -58,10 +58,10 @@ _Goal: Specs are verified before publish. Generated code is validated against sp
 
 | # | Task | Spec | Priority | Depends On |
 |---|------|------|----------|------------|
-| 3.1 | L0 verification: YAML parse, schema validate, file existence | 08 | P0 | 1.2 |
+| 3.1 | ✅ L0 verification: YAML parse, schema validate, file existence | 08 | P0 | 1.2 |
 | 3.2 | L1 verification: cross-reference checks, constraint consistency | 08 | P1 | 3.1 |
 | 3.3 | L2 verification: dependency resolution check | 08 | P1 | 3.2, 2.5 |
-| 3.4 | `specpm verify` command | 08 | P0 | 3.1 |
+| 3.4 | ✅ `specpm verify` command | 08 | P0 | 3.1 |
 | 3.5 | Require L2 before publish (gate in publish flow) | 08, 09 | P1 | 3.3, 2.6 |
 | 3.6 | AST parser setup: ts-morph for TypeScript/JavaScript | 05 | P1 | — |
 | 3.7 | Entity checker: validate interfaces match JSON Schema | 05 | P1 | 3.6 |
