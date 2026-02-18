@@ -1,6 +1,15 @@
 {
-  "name": "cli",
-  "version": "0.0.1",
+  "name": "specpm",
+  "version": "0.1.0",
+  "description": "SpecPM — the package manager for AI coding specifications",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/newtro/specpm.git",
+    "directory": "packages/cli"
+  },
+  "keywords": ["ai", "specifications", "package-manager", "claude", "cursor", "copilot"],
+  "license": "MIT",
+  "author": "Newtro Studios",
   "type": "module",
   "bin": {
     "specpm": "dist/index.js"
