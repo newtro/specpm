@@ -6,6 +6,7 @@ import { contextCommand } from './commands/context.js'
 import { verifyCommand } from './commands/verify.js'
 import { publishCommand } from './commands/publish.js'
 import { loginCommand, logoutCommand } from './commands/login.js'
+import { searchCommand } from './commands/search.js'
 
 const program = new Command()
 
@@ -117,6 +118,22 @@ program
   .description('Remove stored authentication')
   .action(async () => {
     const result = await logoutCommand()
+    if (!result.ok) {
+      console.error(`Error: ${result.error}`)
+      process.exit(1)
+    }
+  })
+
+program
+  .command('search <query>')
+  .description('Search for spec packages in the registry')
+  .option('--tag <tag>', 'Filter by tag')
+  .option('--sort <sort>', 'Sort by: relevance, downloads, recent')
+  .option('--limit <limit>', 'Max results')
+  .option('--json', 'Output as JSON')
+  .option('--registry <url>', 'Registry URL')
+  .action(async (query, options) => {
+    const result = await searchCommand(query, options)
     if (!result.ok) {
       console.error(`Error: ${result.error}`)
       process.exit(1)
