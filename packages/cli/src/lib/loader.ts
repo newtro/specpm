@@ -1,4 +1,4 @@
-import { readFile, access, readdir, stat } from 'node:fs/promises'
+import { readFile, access, readdir, stat, lstat } from 'node:fs/promises'
 import { join, normalize, relative, isAbsolute } from 'node:path'
 import Ajv from 'ajv'
 import { parse as parseYaml } from 'yaml'
@@ -125,4 +125,64 @@ export async function loadSpecPackage(directory: string): Promise<Result<SpecPac
     ok: true,
     value: { manifest, directory, entities, states, constraints, docs },
   }
+}
+
+/**
+ * List all installed spec packages from .specpm/specs/
+ */
+export async function listInstalledSpecs(projectRoot: string): Promise<Result<SpecPackage[], ValidationError[]>> {
+  const specsDir = join(projectRoot, '.specpm', 'specs')
+  if (!(await fileExists(specsDir))) {
+    return { ok: true, value: [] }
+  }
+
+  const packages: SpecPackage[] = []
+  const errors: ValidationError[] = []
+
+  // Scan @scope directories
+  const entries = await readdir(specsDir)
+  for (const entry of entries) {
+    if (!entry.startsWith('@')) continue
+    const scopeDir = join(specsDir, entry)
+    const scopeStat = await lstat(scopeDir)
+    if (!scopeStat.isDirectory()) continue
+
+    const names = await readdir(scopeDir)
+    for (const name of names) {
+      const packageDir = join(scopeDir, name)
+      const pkgStat = await lstat(packageDir)
+      if (!pkgStat.isDirectory()) continue
+
+      const result = await loadSpecPackage(packageDir)
+      if (result.ok) {
+        packages.push(result.value)
+      } else {
+        errors.push(...result.error)
+      }
+    }
+  }
+
+  if (errors.length > 0 && packages.length === 0) {
+    return { ok: false, error: errors }
+  }
+
+  return { ok: true, value: packages }
+}
+
+/**
+ * Get a single installed spec by name (e.g. "@auth/oauth2")
+ */
+export async function getInstalledSpec(projectRoot: string, name: string): Promise<Result<SpecPackage, ValidationError[]>> {
+  // name format: @scope/package
+  const match = name.match(/^@([a-z0-9-]+)\/([a-z0-9-]+)$/)
+  if (!match) {
+    return { ok: false, error: [{ path: name, message: `Invalid package name: ${name}` }] }
+  }
+
+  const packageDir = join(projectRoot, '.specpm', 'specs', `@${match[1]}`, match[2])
+  if (!(await fileExists(packageDir))) {
+    return { ok: false, error: [{ path: name, message: `Package not installed: ${name}` }] }
+  }
+
+  return loadSpecPackage(packageDir)
 }
