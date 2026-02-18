@@ -48,5 +48,21 @@ function initSchema(db: Database.Database): void {
       published_at TEXT NOT NULL DEFAULT (datetime('now')),
       UNIQUE(package_id, version)
     );
+
+    CREATE TABLE IF NOT EXISTS package_tags (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      package_id INTEGER NOT NULL REFERENCES packages(id),
+      tag TEXT NOT NULL,
+      UNIQUE(package_id, tag)
+    );
+
+    CREATE TABLE IF NOT EXISTS download_counts (
+      package_id INTEGER PRIMARY KEY REFERENCES packages(id),
+      count INTEGER NOT NULL DEFAULT 0
+    );
+
+    CREATE VIRTUAL TABLE IF NOT EXISTS package_search USING fts5(
+      name, description, tags, content='packages', content_rowid='id'
+    );
   `)
 }

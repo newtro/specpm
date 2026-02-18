@@ -3,6 +3,7 @@ import multipart from '@fastify/multipart'
 import { createDatabase } from './db.js'
 import { registerAuthRoutes } from './routes/auth.js'
 import { registerPackageRoutes } from './routes/packages.js'
+import { registerSearchRoutes } from './routes/search.js'
 import type Database from 'better-sqlite3'
 
 export interface RegistryOptions {
@@ -31,6 +32,7 @@ export async function createServer(options: RegistryOptions = {}) {
   // Register routes
   registerAuthRoutes(app, db)
   registerPackageRoutes(app, db, dataDir)
+  registerSearchRoutes(app, db)
 
   return app
 }

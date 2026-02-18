@@ -7,6 +7,7 @@ import { execSync } from 'node:child_process'
 import type { FastifyInstance } from 'fastify'
 import type Database from 'better-sqlite3'
 import { getUserFromToken } from './auth.js'
+import { indexPackageForSearch } from './search.js'
 
 async function fileExists(p: string): Promise<boolean> {
   try { await access(p); return true } catch { return false }
@@ -101,6 +102,10 @@ export function registerPackageRoutes(app: FastifyInstance, db: Database.Databas
     db.prepare(
       'INSERT INTO versions (package_id, version, manifest, integrity, tarball_path, size) VALUES (?, ?, ?, ?, ?, ?)'
     ).run(packageId, version, manifestJson, integrity, tarballPath, tarballBuffer.length)
+
+    // Index for search
+    const tags = manifest.tags ?? []
+    indexPackageForSearch(db, packageId, packageName, manifest.description ?? '', tags)
 
     return reply.status(201).send({
       name: packageName,
