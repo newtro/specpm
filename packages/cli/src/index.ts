@@ -7,6 +7,7 @@ import { verifyCommand } from './commands/verify.js'
 import { publishCommand } from './commands/publish.js'
 import { loginCommand, logoutCommand } from './commands/login.js'
 import { searchCommand } from './commands/search.js'
+import { versionCommand } from './commands/version.js'
 
 const program = new Command()
 
@@ -118,6 +119,23 @@ program
   .description('Remove stored authentication')
   .action(async () => {
     const result = await logoutCommand()
+    if (!result.ok) {
+      console.error(`Error: ${result.error}`)
+      process.exit(1)
+    }
+  })
+
+program
+  .command('version <bump>')
+  .description('Bump package version (major, minor, or patch)')
+  .option('--message <msg>', 'Changelog message')
+  .option('--preid <preid>', 'Prerelease identifier (e.g., beta)')
+  .action(async (bump, options) => {
+    if (!['major', 'minor', 'patch'].includes(bump)) {
+      console.error('Error: bump must be major, minor, or patch')
+      process.exit(2)
+    }
+    const result = await versionCommand(bump, options)
     if (!result.ok) {
       console.error(`Error: ${result.error}`)
       process.exit(1)
