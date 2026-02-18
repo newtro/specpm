@@ -13,6 +13,7 @@
     "ajv": "^8.18.0",
     "commander": "^13.0.0",
     "shared": "workspace:*",
+    "ts-morph": "^27.0.2",
     "yaml": "^2.8.2"
   },
   "devDependencies": {
